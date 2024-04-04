@@ -4,7 +4,7 @@ import express from 'express';
 import { createServer } from 'http';
 import WebSocket, { WebSocketServer } from 'ws';
 
-import { SQLiteEventStore } from '../../core/dist/index.js';
+import { SQLiteEventStore, NostrRelay, terminateConnectionsInterval } from '../../core/dist/index.js';
 import { PORT } from './env.js';
 import { logger } from './logger.js';
 import db from './db.js';
@@ -18,7 +18,11 @@ const server = createServer();
 
 const wss = new WebSocketServer({ server });
 
-// TODO: setup relay
+// terminate connections if they become inactive
+terminateConnectionsInterval(wss, 30000);
+
+const relay = new NostrRelay(eventStore);
+relay.attachToServer(wss);
 
 const app = express();
 server.on('request', app);
