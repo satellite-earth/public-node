@@ -5,7 +5,7 @@ import { createServer } from 'http';
 import WebSocket, { WebSocketServer } from 'ws';
 
 import { SQLiteEventStore, NostrRelay, terminateConnectionsInterval } from '../../core/dist/index.js';
-import { PORT } from './env.js';
+import { ENABLE_HYPER_DHT, PORT, SECRET_KEY } from './env.js';
 import { logger } from './logger.js';
 import db from './db.js';
 import { ChannelManager } from './modules/channel-manager.js';
@@ -15,7 +15,7 @@ import { AdminCommands } from './modules/admin-command.js';
 // @ts-expect-error
 global.WebSocket = WebSocket;
 
-const signer = new Signer('c8cd4621ab5c388b72217fa6c18c8e9383edd3ceb968caca57acc3a67f76f034');
+const signer = new Signer(SECRET_KEY);
 
 const eventStore = new SQLiteEventStore(db);
 await eventStore.setup();
@@ -47,6 +47,15 @@ if (!channelManager.getChannel('general')) {
 const commands = new AdminCommands(eventStore, channelManager);
 commands.setup();
 
-server.listen(PORT, () => {
+server.listen(PORT, async () => {
 	logger('Started server on port', PORT);
+
+	if (ENABLE_HYPER_DHT) {
+		const { default: HolesailServer } = await import('holesail-server');
+
+		const holesail = new HolesailServer();
+		await holesail.serve(PORT, '127.0.0.1', undefined, SECRET_KEY);
+
+		logger('Started server on', 'hyper://' + holesail.getPublicKey());
+	}
 });
