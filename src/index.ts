@@ -5,15 +5,19 @@ import { createServer } from 'http';
 import WebSocket, { WebSocketServer } from 'ws';
 
 import { SQLiteEventStore, NostrRelay, terminateConnectionsInterval } from '../../core/dist/index.js';
-import { ENABLE_HYPER_DHT, PORT, SECRET_KEY } from './env.js';
+import { ENABLE_HYPER_DHT, PORT, PUBLIC_URL, SECRET_KEY } from './env.js';
 import { logger } from './logger.js';
 import db from './db.js';
 import { ChannelManager } from './modules/channel-manager.js';
 import Signer from './modules/signer.js';
 import { AdminCommands } from './modules/admin-command.js';
+import dayjs from 'dayjs';
+import { Relay, useWebSocketImplementation } from 'nostr-tools';
 
 // @ts-expect-error
 global.WebSocket = WebSocket;
+
+useWebSocketImplementation(WebSocket);
 
 const signer = new Signer(SECRET_KEY);
 
@@ -50,12 +54,32 @@ commands.setup();
 server.listen(PORT, async () => {
 	logger('Started server on port', PORT);
 
+	const addresses: string[][] = [];
+
+	if (PUBLIC_URL) addresses.push(['r', PUBLIC_URL]);
+
 	if (ENABLE_HYPER_DHT) {
 		const { default: HolesailServer } = await import('holesail-server');
 
 		const holesail = new HolesailServer();
 		await holesail.serve(PORT, '127.0.0.1', undefined, SECRET_KEY);
 
-		logger('Started server on', 'hyper://' + holesail.getPublicKey());
+		const hyperAddress = 'hyper://' + holesail.getPublicKey();
+		addresses.push(['r', hyperAddress]);
+
+		logger('Started server on', hyperAddress);
 	}
+
+	const communityEvent = await signer.signEvent({
+		kind: 12012,
+		content: '',
+		tags: [...addresses],
+		created_at: dayjs().unix(),
+	});
+
+	eventStore.addEvent(communityEvent);
+
+	const relay = await Relay.connect('wss://nostrue.com');
+	relay.publish(communityEvent);
+	logger('Published community definition event');
 });
