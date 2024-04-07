@@ -64,8 +64,8 @@ server.listen(PORT, async () => {
 		const holesail = new HolesailServer();
 		await holesail.serve(PORT, '127.0.0.1', undefined, SECRET_KEY);
 
-		const hyperAddress = 'hyper://' + holesail.getPublicKey();
-		addresses.push(['r', hyperAddress]);
+		const hyperAddress = holesail.getPublicKey();
+		addresses.push(['r', hyperAddress, 'hyper']);
 
 		logger('Started server on', hyperAddress);
 	}
@@ -81,5 +81,5 @@ server.listen(PORT, async () => {
 
 	const relay = await Relay.connect('wss://nostrue.com');
 	relay.publish(communityEvent);
-	logger('Published community definition event');
+	logger('Published community definition event for', communityEvent.pubkey);
 });

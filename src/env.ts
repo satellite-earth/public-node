@@ -1,5 +1,5 @@
 const DATA_PATH = process.env.DATA_PATH || './data';
-const PORT = parseInt(process.env.PORT ?? '') || 2012;
+const PORT = parseInt(process.env.PORT ?? '') || 2001;
 const SECRET_KEY = process.env.SECRET_KEY || '';
 const PUBLIC_URL = process.env.PUBLIC_URL;
 const ENABLE_HYPER_DHT = !!process.env.ENABLE_HYPER_DHT && process.env.ENABLE_HYPER_DHT !== 'false';
