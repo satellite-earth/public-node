@@ -73,7 +73,12 @@ server.listen(PORT, async () => {
 	const communityEvent = await signer.signEvent({
 		kind: 12012,
 		content: '',
-		tags: [...addresses],
+		tags: [
+			['name', 'Temp Community Name'],
+			['about', 'Community Description'],
+			['image', 'https://cdn.hzrd149.com/a0e2b39975c8da1702374b3eed6f4c6c7333e6ae0008dadafe93bd34bfb2ca78.png'],
+			...addresses,
+		],
 		created_at: dayjs().unix(),
 	});
 
