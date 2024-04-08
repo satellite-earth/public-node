@@ -27,7 +27,8 @@ export class AdminCommands {
 				this.setChannelMetadata(event);
 				break;
 			case SET_CHANNEL_STATUS_KIND:
-				this.setChannelStatus(event);
+				if (event.tags.some((t) => t[0] === 'purge')) this.purgeChannel(event);
+				else this.setChannelStatus(event);
 				break;
 
 			default:
@@ -56,7 +57,7 @@ export class AdminCommands {
 		}
 	}
 
-	protected setChannelStatus(event: NostrEvent) {
+	protected purgeChannel(event: NostrEvent) {
 		const id = getTagValue(event, 'h');
 		if (!id) return;
 
@@ -64,6 +65,24 @@ export class AdminCommands {
 		if (channel && channel.updated_at < event.created_at) {
 			this.log('Purging channel', id);
 			this.channelManager.purgeChannel(id);
+		}
+	}
+
+	protected setChannelStatus(event: NostrEvent) {
+		const id = getTagValue(event, 'h');
+		if (!id) return;
+
+		const channel = this.channelManager.getChannel(id);
+		if (channel && channel.updated_at < event.created_at) {
+			const isPublic = event.tags.some((t) => t[0] === 'public');
+			const isOpen = event.tags.some((t) => t[0] === 'open');
+
+			this.log('Changing channel status', isPublic, isOpen);
+
+			channel.public = isPublic;
+			channel.open = isOpen;
+
+			this.channelManager.saveChannel(id);
 		}
 	}
 }
