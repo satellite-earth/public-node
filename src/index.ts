@@ -3,16 +3,17 @@ import 'dotenv/config';
 import express from 'express';
 import { createServer } from 'http';
 import WebSocket, { WebSocketServer } from 'ws';
+import dayjs from 'dayjs';
+import { Relay, SimplePool, useWebSocketImplementation } from 'nostr-tools';
 
 import { SQLiteEventStore, NostrRelay, terminateConnectionsInterval } from '../../core/dist/index.js';
-import { ENABLE_HYPER_DHT, PORT, PUBLIC_URL, SECRET_KEY } from './env.js';
 import { logger } from './logger.js';
 import db from './db.js';
+import { ENABLE_HYPER_DHT, PORT, PUBLIC_URL, SECRET_KEY } from './env.js';
 import { ChannelManager } from './modules/channel-manager.js';
 import Signer from './modules/signer.js';
 import { AdminCommands } from './modules/admin-command.js';
-import dayjs from 'dayjs';
-import { Relay, useWebSocketImplementation } from 'nostr-tools';
+import { CommunityConfig } from './modules/community-config.js';
 
 // @ts-expect-error
 global.WebSocket = WebSocket;
@@ -38,6 +39,12 @@ server.on('request', app);
 
 // serve the community ui
 app.use(express.static('../community-ui/dist'));
+
+// outbound relay pool
+const relayPool = new SimplePool();
+
+// community metadata
+const communityConfig = new CommunityConfig(eventStore, signer, relayPool);
 
 // channel manager
 const channelManager = new ChannelManager(eventStore, signer);
@@ -70,21 +77,7 @@ server.listen(PORT, async () => {
 		logger('Started server on', hyperAddress);
 	}
 
-	const communityEvent = await signer.signEvent({
-		kind: 12012,
-		content: '',
-		tags: [
-			['name', 'Temp Community Name'],
-			['about', 'Community Description'],
-			['image', 'https://cdn.hzrd149.com/a0e2b39975c8da1702374b3eed6f4c6c7333e6ae0008dadafe93bd34bfb2ca78.png'],
-			...addresses,
-		],
-		created_at: dayjs().unix(),
-	});
+	await communityConfig.publish(['wss://nostrue.com'], addresses);
 
-	eventStore.addEvent(communityEvent);
-
-	const relay = await Relay.connect('wss://nostrue.com');
-	relay.publish(communityEvent);
-	logger('Published community definition event for', communityEvent.pubkey);
+	logger('Published community definition event for', signer.getPublicKey());
 });
