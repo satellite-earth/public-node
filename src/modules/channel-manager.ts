@@ -2,9 +2,10 @@ import dayjs from 'dayjs';
 import { EventTemplate } from 'nostr-tools';
 
 import { IEventStore } from '../../../core/dist/index.js';
-import Signer from './signer.js';
 import { getTagValue } from '../helpers/event.js';
 import { logger } from '../logger.js';
+import Signer from './signer.js';
+import { DeletionManager } from './deletion-manager.js';
 
 export const CHANNEL_METADATA_KIND = 39000;
 
@@ -24,12 +25,14 @@ export class ChannelManager {
 	log = logger.extend('channel-manager');
 	signer: Signer;
 	eventStore: IEventStore;
+	deletionManager: DeletionManager;
 
 	channels: Record<string, Channel> = {};
 
-	constructor(eventStore: IEventStore, signer: Signer) {
+	constructor(eventStore: IEventStore, signer: Signer, deletionManager: DeletionManager) {
 		this.signer = signer;
 		this.eventStore = eventStore;
+		this.deletionManager = deletionManager;
 	}
 
 	setup() {
@@ -96,6 +99,7 @@ export class ChannelManager {
 	}
 
 	createChannel(id: string, metadata: Channel['metadata'] = {}) {
+		this.log('Creating channel', id);
 		const channel: Channel = { id, metadata, public: true, open: true, updated_at: dayjs().unix() };
 
 		this.channels[id] = channel;
@@ -110,22 +114,18 @@ export class ChannelManager {
 		return this.saveChannel(id);
 	}
 
-	removeChannel(id: string) {
-		delete this.channels[id];
-		const pubkey = this.signer.getPublicKey();
-		const events = this.eventStore.getEventsForFilters([
-			{ kinds: [CHANNEL_METADATA_KIND], authors: [pubkey], '#d': [id] },
-		]);
-		for (const event of events) this.eventStore.removeEvent(event.id);
-		this.log('Removed channel', id);
-	}
-
 	purgeChannel(id: string) {
-		this.removeChannel(id);
+		this.log('Removing channel', id);
+		const pubkey = this.signer.getPublicKey();
 
 		// remove all events with ["h",<channel-id>]
-		const events = this.eventStore.getEventsForFilters([{ '#h': [id] }]);
-		for (const event of events) this.eventStore.removeEvent(event.id);
-		this.log('Purged', events.length, 'events');
+		const messages = this.eventStore.getEventsForFilters([{ '#h': [id] }]);
+		const channelMetadataCoordinate = `${CHANNEL_METADATA_KIND}:${pubkey}:${id}`;
+
+		this.deletionManager.deleteEvents(
+			{ ids: messages.map((e) => e.id), coordinates: [channelMetadataCoordinate] },
+			`Remove channel ${id}`,
+		);
+		delete this.channels[id];
 	}
 }

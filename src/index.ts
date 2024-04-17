@@ -3,8 +3,7 @@ import 'dotenv/config';
 import express from 'express';
 import { createServer } from 'http';
 import WebSocket, { WebSocketServer } from 'ws';
-import dayjs from 'dayjs';
-import { Relay, SimplePool, useWebSocketImplementation } from 'nostr-tools';
+import { SimplePool, useWebSocketImplementation } from 'nostr-tools';
 
 import { SQLiteEventStore, NostrRelay, terminateConnectionsInterval } from '../../core/dist/index.js';
 import { logger } from './logger.js';
@@ -14,10 +13,10 @@ import { ChannelManager } from './modules/channel-manager.js';
 import Signer from './modules/signer.js';
 import { AdminCommands } from './modules/admin-command.js';
 import { CommunityConfig } from './modules/community-config.js';
+import { DeletionManager } from './modules/deletion-manager.js';
 
 // @ts-expect-error
 global.WebSocket = WebSocket;
-
 useWebSocketImplementation(WebSocket);
 
 const signer = new Signer(SECRET_KEY);
@@ -46,8 +45,11 @@ const relayPool = new SimplePool();
 // community metadata
 const communityConfig = new CommunityConfig(eventStore, signer, relayPool);
 
+// deletion manager
+const deletionManager = new DeletionManager(eventStore, signer);
+
 // channel manager
-const channelManager = new ChannelManager(eventStore, signer);
+const channelManager = new ChannelManager(eventStore, signer, deletionManager);
 channelManager.setup();
 
 // ensure the general channel is created

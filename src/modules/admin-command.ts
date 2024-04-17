@@ -1,4 +1,5 @@
 import { NostrEvent } from 'nostr-tools';
+
 import { IEventStore } from '../../../core/dist/index.js';
 import { ChannelManager } from './channel-manager.js';
 import { getTagValue } from '../helpers/event.js';
