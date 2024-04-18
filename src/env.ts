@@ -1,3 +1,5 @@
+import 'dotenv/config';
+
 const DATA_PATH = process.env.DATA_PATH || './data';
 const PORT = parseInt(process.env.PORT ?? '') || 2001;
 const SECRET_KEY = process.env.SECRET_KEY || '';

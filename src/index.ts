@@ -1,9 +1,9 @@
 #!bin/env node
-import 'dotenv/config';
 import express from 'express';
 import { createServer } from 'http';
 import WebSocket, { WebSocketServer } from 'ws';
 import { SimplePool, useWebSocketImplementation } from 'nostr-tools';
+import type HolesailServer from 'holesail-server';
 
 import { SQLiteEventStore, NostrRelay, terminateConnectionsInterval } from '../../core/dist/index.js';
 import { logger } from './logger.js';
@@ -60,6 +60,7 @@ if (!channelManager.getChannel('general')) {
 const commands = new AdminCommands(eventStore, channelManager);
 commands.setup();
 
+let holesail: HolesailServer;
 server.listen(PORT, async () => {
 	logger('Started server on port', PORT);
 
@@ -70,7 +71,7 @@ server.listen(PORT, async () => {
 	if (ENABLE_HYPER_DHT) {
 		const { default: HolesailServer } = await import('holesail-server');
 
-		const holesail = new HolesailServer();
+		holesail = new HolesailServer();
 		await holesail.serve(PORT, '127.0.0.1', undefined, SECRET_KEY);
 
 		const hyperAddress = holesail.getPublicKey();
@@ -83,3 +84,13 @@ server.listen(PORT, async () => {
 
 	logger('Published community definition event for', signer.getPublicKey());
 });
+
+async function shutdown() {
+	relay.stop();
+	wss.close();
+	server.close();
+	if (holesail) holesail.destroy();
+	process.exit(0);
+}
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
