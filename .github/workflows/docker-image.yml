@@ -50,18 +50,6 @@ jobs:
             type=ref,event=branch
             type=ref,event=pr
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          registry-url: https://npm.pkg.github.com/
-          always-auth: 'true'
-      - name: Install Dependencies
-        run: yarn install
-        env:
-          NODE_ENV: production
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
@@ -70,3 +58,5 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            NODE_AUTH_TOKEN=${{secrets.GITHUB_TOKEN}}
