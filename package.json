@@ -17,7 +17,7 @@
 	},
 	"dependencies": {
 		"@noble/hashes": "^1.4.0",
-		"@satellite-earth/core": "^0.1.0",
+		"@satellite-earth/core": "^0.1.2",
 		"better-sqlite3": "^9.4.4",
 		"dayjs": "^1.11.10",
 		"debug": "^4.3.4",
