@@ -1,6 +1,6 @@
 import { NostrEvent } from 'nostr-tools';
 
-import { IEventStore } from '../../../core/dist/index.js';
+import { IEventStore } from '@satellite-earth/core';
 import { ChannelManager } from './channel-manager.js';
 import { getTagValue } from '../helpers/event.js';
 import { logger } from '../logger.js';

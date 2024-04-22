@@ -2,7 +2,7 @@ import { EventTemplate, NostrEvent, kinds } from 'nostr-tools';
 import dayjs from 'dayjs';
 import EventEmitter from 'events';
 
-import { IEventStore, RelayActions } from '../../../core/dist/index.js';
+import { IEventStore, RelayActions } from '@satellite-earth/core';
 import Signer from './signer.js';
 import { logger } from '../logger.js';
 

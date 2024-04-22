@@ -1,10 +1,13 @@
 {
-	"name": "@satellite/public-node",
+	"name": "@satellite-earth/public-node",
 	"version": "0.1.0",
 	"type": "module",
 	"main": "dist/index.js",
-	"repository": "https://github.com/satellite-earth/public-node",
 	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/satellite-earth/public-node.git"
+	},
 	"private": true,
 	"scripts": {
 		"start": "DEBUG='satellite,satellite:*' node dist/index.js",
@@ -14,6 +17,7 @@
 	},
 	"dependencies": {
 		"@noble/hashes": "^1.4.0",
+		"@satellite-earth/core": "^0.1.0",
 		"better-sqlite3": "^9.4.4",
 		"dayjs": "^1.11.10",
 		"debug": "^4.3.4",

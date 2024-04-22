@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { EventTemplate } from 'nostr-tools';
 
-import { IEventStore } from '../../../core/dist/index.js';
+import { IEventStore } from '@satellite-earth/core';
 import { getTagValue } from '../helpers/event.js';
 import { logger } from '../logger.js';
 import Signer from './signer.js';

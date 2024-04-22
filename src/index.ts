@@ -5,7 +5,7 @@ import WebSocket, { WebSocketServer } from 'ws';
 import { SimplePool, useWebSocketImplementation } from 'nostr-tools';
 import type HolesailServer from 'holesail-server';
 
-import { SQLiteEventStore, NostrRelay, terminateConnectionsInterval } from '../../core/dist/index.js';
+import { SQLiteEventStore, NostrRelay, terminateConnectionsInterval } from '@satellite-earth/core';
 import { logger } from './logger.js';
 import db from './db.js';
 import { ENABLE_HYPER_DHT, PORT, PUBLIC_URL, SECRET_KEY } from './env.js';

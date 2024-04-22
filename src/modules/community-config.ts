@@ -2,7 +2,7 @@ import EventEmitter from 'events';
 import { SimplePool } from 'nostr-tools';
 import dayjs from 'dayjs';
 
-import { IEventStore } from '../../../core/dist/index.js';
+import { IEventStore } from '@satellite-earth/core';
 import { COMMUNITY_DEFINITION_KIND } from '../const.js';
 import { getTagValue } from '../helpers/event.js';
 import Signer from './signer.js';
