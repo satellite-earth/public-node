@@ -4,6 +4,7 @@ import { createServer } from 'http';
 import WebSocket, { WebSocketServer } from 'ws';
 import { SimplePool, useWebSocketImplementation } from 'nostr-tools';
 import type HolesailServer from 'holesail-server';
+import path from 'path';
 
 import { SQLiteEventStore, NostrRelay, terminateConnectionsInterval } from '@satellite-earth/core';
 import { logger } from './logger.js';
@@ -37,7 +38,8 @@ const app = express();
 server.on('request', app);
 
 // serve the community ui
-app.use(express.static('../community-ui/dist'));
+const communityDir = path.dirname(import.meta.resolve('@satellite-earth/community-ui').replace('file://', ''));
+app.use(express.static(communityDir));
 
 // outbound relay pool
 const relayPool = new SimplePool();
