@@ -1,5 +1,5 @@
 import EventEmitter from 'events';
-import { SimplePool } from 'nostr-tools';
+import { NostrEvent, SimplePool } from 'nostr-tools';
 import dayjs from 'dayjs';
 
 import { IEventStore } from '@satellite-earth/core';
@@ -37,7 +37,7 @@ export class CommunityConfig extends EventEmitter<EventMap> {
 
 		const definitionEvent = eventStore.getEventsForFilters([
 			{ kinds: [COMMUNITY_DEFINITION_KIND], authors: [signer.getPublicKey()] },
-		])?.[0];
+		])?.[0] as NostrEvent | undefined;
 		if (!definitionEvent) throw new Error('Cant find 12012 event in store');
 
 		this.metadata = {
