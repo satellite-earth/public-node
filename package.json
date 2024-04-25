@@ -8,8 +8,12 @@
 		"type": "git",
 		"url": "git+https://github.com/satellite-earth/public-node.git"
 	},
-	"private": true,
+	"files": [
+		"dist"
+	],
+	"bin": "dist/index.js",
 	"scripts": {
+		"prepack": "tsc",
 		"start": "node dist/index.js",
 		"dev": "nodemon --loader @swc-node/register/esm src/index.ts",
 		"build": "tsc",

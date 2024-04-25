@@ -1,4 +1,4 @@
-#!bin/env node
+#!/bin/env node
 import express from 'express';
 import { createServer } from 'http';
 import WebSocket, { WebSocketServer } from 'ws';
