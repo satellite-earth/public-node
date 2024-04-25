@@ -4,13 +4,12 @@ import Database, { type Database as TDatabase } from 'better-sqlite3';
 import { createServer } from 'http';
 import { mkdirp } from 'mkdirp';
 import bodyParser from 'body-parser';
-import { spawn } from 'child_process';
 import { randomBytes } from 'crypto';
 import pfs from 'fs/promises';
 import dayjs from 'dayjs';
 
 import { COMMUNITY_DEFINITION_KIND } from '../const.js';
-import { DATA_PATH, PORT } from '../env.js';
+import { DATA_PATH, PORT, SECRET_KEY } from '../env.js';
 import { closeHttpServer } from '../helpers/server.js';
 import { logger } from '../logger.js';
 
@@ -46,10 +45,12 @@ server.listen(PORT, async () => {
 async function createCommunity(metadata: { name: string; about: string; owner: string }) {
 	logger('Creating community', metadata.name);
 
-	const secretKey = randomBytes(32).toString('hex');
+	const secretKey = SECRET_KEY || randomBytes(32).toString('hex');
 
-	logger('Adding SECRET_KEY to .env');
-	await pfs.appendFile('.env', `SECRET_KEY="${secretKey}"\n`);
+	if (!SECRET_KEY) {
+		logger('Saving SECRET_KEY to .env');
+		await pfs.appendFile('.env', `SECRET_KEY="${secretKey}"\n`);
+	}
 
 	const signer = new Signer(secretKey);
 
