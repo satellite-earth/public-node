@@ -5,11 +5,11 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "ts-node",
+			"name": "node",
 			"type": "node",
 			"request": "launch",
 			"args": ["dist/index.js"],
-			"runtimeArgs": ["-r", "ts-node/register"],
+			"runtimeArgs": ["--loader", "@swc-node/register/esm"],
 			"cwd": "${workspaceRoot}",
 			"protocol": "inspector",
 			"internalConsoleOptions": "openOnSessionStart",
