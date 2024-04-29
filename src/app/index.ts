@@ -6,6 +6,7 @@ import { createServer } from 'http';
 import { WebSocketServer } from 'ws';
 import { SimplePool } from 'nostr-tools';
 import { mkdirp } from 'mkdirp';
+import { resolve as importMetaResolve } from 'import-meta-resolve';
 
 import { DATA_PATH, ENABLE_HYPER_DHT, PORT, PUBLIC_URL, SECRET_KEY } from '../env.js';
 import Signer from '../modules/signer.js';
@@ -35,7 +36,9 @@ const expressApp = express();
 server.on('request', expressApp);
 
 // serve the community ui
-const communityDir = path.dirname(import.meta.resolve('@satellite-earth/community-ui').replace('file://', ''));
+const communityDir = path.dirname(
+	importMetaResolve('@satellite-earth/community-ui', import.meta.url).replace('file://', ''),
+);
 expressApp.use(express.static(communityDir));
 
 // terminate connections if they become inactive
