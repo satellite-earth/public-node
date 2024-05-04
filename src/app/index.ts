@@ -84,7 +84,7 @@ server.listen(PORT, async () => {
 		const { default: HolesailServer } = await import('holesail-server');
 
 		holesail = new HolesailServer();
-		await holesail.serve(PORT, '127.0.0.1', undefined, SECRET_KEY);
+		await holesail.serve({ port: PORT, address: '127.0.0.1', buffSeed: SECRET_KEY });
 
 		const hyperAddress = holesail.getPublicKey();
 		addresses.push(['r', hyperAddress, 'hyper']);
