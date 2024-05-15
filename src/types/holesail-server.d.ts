@@ -6,7 +6,7 @@ declare module 'holesail-server' {
 
 	export default class HolesailServer {
 		keyPair(buffSeed?: string): KeyPair;
-		serve(port: number, address: string, callback?: () => void, buffSeed?: string): Promise<void>;
+		serve(args: { port: number; address: string; buffSeed?: string }, callback?: () => void): Promise<void>;
 		destroy(): void;
 		shutdown(): Promise<void>;
 		getPublicKey(): string;

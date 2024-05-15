@@ -15,7 +15,8 @@
 			"internalConsoleOptions": "openOnSessionStart",
 			"outputCapture": "std",
 			"env": {
-				"DEBUG": "satellite,satellite:*"
+				"DEBUG": "satellite,satellite:*",
+				"DEBUG_COLORS": "1"
 			}
 		}
 	]
