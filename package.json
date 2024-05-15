@@ -1,6 +1,6 @@
 {
 	"name": "@satellite-earth/public-node",
-	"version": "0.1.1",
+	"version": "0.2.0",
 	"type": "module",
 	"main": "dist/index.js",
 	"license": "MIT",
@@ -22,8 +22,8 @@
 	},
 	"dependencies": {
 		"@noble/hashes": "^1.4.0",
-		"@satellite-earth/community-ui": "^0.1.1",
-		"@satellite-earth/core": "^0.1.2",
+		"@satellite-earth/community-ui": "^0.2.0",
+		"@satellite-earth/core": "^0.2.0",
 		"better-sqlite3": "^9.6.0",
 		"body-parser": "^1.20.2",
 		"dayjs": "^1.11.10",
