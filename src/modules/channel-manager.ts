@@ -135,7 +135,7 @@ export class ChannelManager {
 
 		this.deletionManager.deleteEvents(
 			{ ids: messages.map((e) => e.id), coordinates: [channelMetadataCoordinate] },
-			`Remove channel ${id}`,
+			`Remove channel ${id}`
 		);
 		delete this.channels[id];
 	}

@@ -36,10 +36,11 @@ const expressApp: Express = express();
 server.on('request', expressApp);
 
 // serve the community ui
-const communityDir = path.dirname(
-	importMetaResolve('@satellite-earth/community-ui', import.meta.url).replace('file://', ''),
-);
+const communityDir = path.dirname(importMetaResolve('@satellite-earth/web-ui', import.meta.url).replace('file://', ''));
 expressApp.use(express.static(communityDir));
+expressApp.get('*', (req, res) => {
+	res.sendFile(path.resolve(communityDir, 'index.html'));
+});
 
 // terminate connections if they become inactive
 terminateConnectionsInterval(wss, 30000);

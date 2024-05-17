@@ -18,11 +18,11 @@
 		"start": "node dist/index.js",
 		"dev": "nodemon --loader @swc-node/register/esm src/index.ts",
 		"build": "tsc",
-		"format": "prettier -w ."
+		"format": "prettier -w . --ignore-path .gitignore"
 	},
 	"dependencies": {
 		"@noble/hashes": "^1.4.0",
-		"@satellite-earth/community-ui": "^0.2.0",
+		"@satellite-earth/web-ui": "^0.2.0",
 		"@satellite-earth/core": "^0.2.0",
 		"better-sqlite3": "^9.6.0",
 		"body-parser": "^1.20.2",
