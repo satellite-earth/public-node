@@ -7,14 +7,14 @@ import { WebSocketServer } from 'ws';
 import { SimplePool } from 'nostr-tools';
 import { mkdirp } from 'mkdirp';
 import { resolve as importMetaResolve } from 'import-meta-resolve';
+import type HolesailServer from 'holesail-server';
 
-import { DATA_PATH, ENABLE_HYPER_DHT, PORT, PUBLIC_URL, SECRET_KEY } from '../env.js';
+import { DATA_PATH, ENABLE_HYPER_DHT, PORT, PUBLIC_URL, REDIRECT_APP_URL, SECRET_KEY } from '../env.js';
 import Signer from '../modules/signer.js';
 import { CommunityConfig } from '../modules/community-config.js';
 import { DeletionManager } from '../modules/deletion-manager.js';
 import { ChannelManager } from '../modules/channel-manager.js';
 import { AdminCommands } from '../modules/admin-command.js';
-import HolesailServer from 'holesail-server';
 import { logger } from '../logger.js';
 
 // create the database
@@ -35,12 +35,24 @@ const wss = new WebSocketServer({ server });
 const expressApp: Express = express();
 server.on('request', expressApp);
 
-// serve the community ui
-const communityDir = path.dirname(importMetaResolve('@satellite-earth/web-ui', import.meta.url).replace('file://', ''));
-expressApp.use(express.static(communityDir));
-expressApp.get('*', (req, res) => {
-	res.sendFile(path.resolve(communityDir, 'index.html'));
-});
+if (REDIRECT_APP_URL) {
+	// redirect to other web ui
+	const url = new URL('/', REDIRECT_APP_URL);
+	url.searchParams.set('community', signer.getPublicKey());
+
+	// TODO: set relay wss:// url so app can connect
+
+	expressApp.get('*', (req, res) => res.redirect(url.toString()));
+} else {
+	// serve the web ui
+	const communityDir = path.dirname(
+		importMetaResolve('@satellite-earth/web-ui', import.meta.url).replace('file://', ''),
+	);
+	expressApp.use(express.static(communityDir));
+	expressApp.get('*', (req, res) => {
+		res.sendFile(path.resolve(communityDir, 'index.html'));
+	});
+}
 
 // terminate connections if they become inactive
 terminateConnectionsInterval(wss, 30000);

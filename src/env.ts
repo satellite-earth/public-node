@@ -6,4 +6,6 @@ const SECRET_KEY = process.env.SECRET_KEY;
 const PUBLIC_URL = process.env.PUBLIC_URL;
 const ENABLE_HYPER_DHT = !!process.env.ENABLE_HYPER_DHT && process.env.ENABLE_HYPER_DHT !== 'false';
 
-export { DATA_PATH, PORT, SECRET_KEY, PUBLIC_URL, ENABLE_HYPER_DHT };
+const REDIRECT_APP_URL = process.env.REDIRECT_APP_URL;
+
+export { DATA_PATH, PORT, SECRET_KEY, PUBLIC_URL, ENABLE_HYPER_DHT, REDIRECT_APP_URL };
