@@ -77,7 +77,8 @@ channelManager.setup();
 // ensure the general channel is created
 // NOTE: the general channel should be prefixed by the community pubkey. also this should probably be moved somewhere else
 if (!channelManager.getChannel('general')) {
-	channelManager.createChannel('general', { name: 'General', about: 'The main text channel' });
+	const prefix = signer.getPublicKey().slice(0, 8) + '-';
+	channelManager.createChannel(prefix + 'general', { name: 'General', about: 'The main text channel' });
 }
 
 // setup admin commands on the relay

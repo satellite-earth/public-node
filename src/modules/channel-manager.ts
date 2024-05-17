@@ -99,7 +99,8 @@ export class ChannelManager {
 	}
 
 	validateChannelId(id: string) {
-		return id.startsWith(this.channelPrefix + '-');
+		const valid = id.startsWith(this.channelPrefix + '-');
+		if (!valid) throw new Error('Community prefix missing');
 	}
 
 	getChannel(id: string): Channel | undefined {
@@ -125,7 +126,6 @@ export class ChannelManager {
 	}
 
 	purgeChannel(id: string) {
-		this.validateChannelId(id);
 		this.log('Removing channel', id);
 		const pubkey = this.signer.getPublicKey();
 
@@ -135,7 +135,7 @@ export class ChannelManager {
 
 		this.deletionManager.deleteEvents(
 			{ ids: messages.map((e) => e.id), coordinates: [channelMetadataCoordinate] },
-			`Remove channel ${id}`
+			`Remove channel ${id}`,
 		);
 		delete this.channels[id];
 	}
