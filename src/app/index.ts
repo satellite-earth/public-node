@@ -1,5 +1,5 @@
 import path from 'path';
-import express from 'express';
+import express, { type Express } from 'express';
 import Database, { type Database as TDatabase } from 'better-sqlite3';
 import { NostrRelay, SQLiteEventStore, terminateConnectionsInterval } from '@satellite-earth/core';
 import { createServer } from 'http';
@@ -32,7 +32,7 @@ const server = createServer();
 const wss = new WebSocketServer({ server });
 
 // create express app
-const expressApp = express();
+const expressApp: Express = express();
 server.on('request', expressApp);
 
 // serve the community ui

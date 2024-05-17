@@ -94,11 +94,20 @@ export class ChannelManager {
 		return event;
 	}
 
+	get channelPrefix() {
+		return this.signer.getPublicKey().slice(0, 8);
+	}
+
+	validateChannelId(id: string) {
+		return id.startsWith(this.channelPrefix + '-');
+	}
+
 	getChannel(id: string): Channel | undefined {
 		return this.channels[id];
 	}
 
 	createChannel(id: string, metadata: Channel['metadata'] = {}) {
+		this.validateChannelId(id);
 		this.log('Creating channel', id);
 		const channel: Channel = { id, metadata, public: true, open: true, updated_at: dayjs().unix() };
 
@@ -107,6 +116,7 @@ export class ChannelManager {
 	}
 
 	updateChannel(id: string, metadata: Channel['metadata']) {
+		this.validateChannelId(id);
 		const channel = this.channels[id];
 		if (!channel) throw new Error(`Missing channel ${id}`);
 
@@ -115,6 +125,7 @@ export class ChannelManager {
 	}
 
 	purgeChannel(id: string) {
+		this.validateChannelId(id);
 		this.log('Removing channel', id);
 		const pubkey = this.signer.getPublicKey();
 

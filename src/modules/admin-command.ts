@@ -19,21 +19,26 @@ export class AdminCommands {
 	}
 
 	setup() {
+		// TODO: handle these events before they are inserted into the event store
 		this.eventStore.on('event:inserted', this.handleEvent.bind(this));
 	}
 
 	handleEvent(event: NostrEvent) {
-		switch (event.kind) {
-			case EDIT_METADATA_KIND:
-				this.setChannelMetadata(event);
-				break;
-			case SET_CHANNEL_STATUS_KIND:
-				if (event.tags.some((t) => t[0] === 'purge')) this.purgeChannel(event);
-				else this.setChannelStatus(event);
-				break;
+		try {
+			switch (event.kind) {
+				case EDIT_METADATA_KIND:
+					this.setChannelMetadata(event);
+					break;
+				case SET_CHANNEL_STATUS_KIND:
+					if (event.tags.some((t) => t[0] === 'purge')) this.purgeChannel(event);
+					else this.setChannelStatus(event);
+					break;
 
-			default:
-				break;
+				default:
+					break;
+			}
+		} catch (err) {
+			this.log('Failed to handle event', event.id);
 		}
 	}
 
