@@ -82,8 +82,7 @@ if (!channelManager.getChannel('general')) {
 }
 
 // setup admin commands on the relay
-const commands = new AdminCommands(eventStore, channelManager);
-commands.setup();
+const commands = new AdminCommands(relay, channelManager);
 
 // start the wss and http server
 let holesail: HolesailServer;
