@@ -26,10 +26,10 @@ jobs:
           registry-url: https://npm.pkg.github.com/
 
       - name: Install dependencies
-        run: yarn install
+        run: pnpm install
 
       - name: Build
-        run: yarn build
+        run: pnpm build
 
       - name: Publish
-        run: yarn publish
+        run: pnpm publish
