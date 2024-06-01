@@ -1,5 +1,5 @@
 import WebSocket from 'ws';
-import { useWebSocketImplementation } from 'nostr-tools';
+import { useWebSocketImplementation } from 'nostr-tools/relay';
 
 // @ts-expect-error
 global.WebSocket = WebSocket;
