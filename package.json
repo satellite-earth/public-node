@@ -18,13 +18,13 @@
 		"start": "node dist/index.js",
 		"dev": "nodemon --loader @swc-node/register/esm src/index.ts",
 		"build": "tsc",
-		"format": "prettier -w ."
+		"format": "prettier -w . --ignore-path .gitignore"
 	},
 	"dependencies": {
 		"@noble/hashes": "^1.4.0",
-		"@satellite-earth/community-ui": "^0.2.0",
 		"@satellite-earth/core": "^0.2.0",
-		"better-sqlite3": "^9.6.0",
+		"@satellite-earth/web-ui": "^0.2.0",
+		"better-sqlite3": "^10.0.0",
 		"body-parser": "^1.20.2",
 		"dayjs": "^1.11.10",
 		"debug": "^4.3.4",
@@ -39,7 +39,7 @@
 	},
 	"devDependencies": {
 		"@changesets/cli": "^2.27.1",
-		"@swc-node/register": "^1.9.1",
+		"@swc-node/register": "1.8.0",
 		"@swc/core": "^1.4.17",
 		"@types/better-sqlite3": "^7.6.9",
 		"@types/body-parser": "^1.19.5",

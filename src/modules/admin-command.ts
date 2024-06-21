@@ -1,6 +1,4 @@
-import { NostrEvent } from 'nostr-tools';
-
-import { IEventStore } from '@satellite-earth/core';
+import { HandlerContext, HandlerNext, NostrRelay } from '@satellite-earth/core';
 import { ChannelManager } from './channel-manager.js';
 import { getTagValue } from '../helpers/event.js';
 import { logger } from '../logger.js';
@@ -10,34 +8,39 @@ export const SET_CHANNEL_STATUS_KIND = 9006;
 
 export class AdminCommands {
 	log = logger.extend('admin-commands');
-	eventStore: IEventStore;
+	relay: NostrRelay;
 	channelManager: ChannelManager;
 
-	constructor(eventStore: IEventStore, channelManager: ChannelManager) {
-		this.eventStore = eventStore;
+	constructor(relay: NostrRelay, channelManager: ChannelManager) {
+		this.relay = relay;
 		this.channelManager = channelManager;
+
+		this.relay.registerEventHandler(this.purgeChannel.bind(this));
+		this.relay.registerEventHandler(this.setChannelMetadata.bind(this));
+		this.relay.registerEventHandler(this.setChannelStatus.bind(this));
 	}
 
-	setup() {
-		this.eventStore.on('event:inserted', this.handleEvent.bind(this));
-	}
+	protected purgeChannel(ctx: HandlerContext, next: HandlerNext) {
+		const { event } = ctx;
+		if (event.kind !== SET_CHANNEL_STATUS_KIND) return next();
 
-	handleEvent(event: NostrEvent) {
-		switch (event.kind) {
-			case EDIT_METADATA_KIND:
-				this.setChannelMetadata(event);
-				break;
-			case SET_CHANNEL_STATUS_KIND:
-				if (event.tags.some((t) => t[0] === 'purge')) this.purgeChannel(event);
-				else this.setChannelStatus(event);
-				break;
+		const isPurge = event.tags.some((t) => t[0] === 'purge');
+		if (!isPurge) return next();
 
-			default:
-				break;
+		const id = getTagValue(event, 'h');
+		if (!id) return;
+
+		const channel = this.channelManager.getChannel(id);
+		if (channel && channel.updated_at < event.created_at) {
+			this.log('Purging channel', id);
+			this.channelManager.purgeChannel(id);
 		}
 	}
 
-	protected setChannelMetadata(event: NostrEvent) {
+	protected setChannelMetadata(ctx: HandlerContext, next: HandlerNext) {
+		const { event } = ctx;
+		if (event.kind !== EDIT_METADATA_KIND) return next();
+
 		const id = getTagValue(event, 'h');
 		if (!id) return;
 
@@ -58,18 +61,10 @@ export class AdminCommands {
 		}
 	}
 
-	protected purgeChannel(event: NostrEvent) {
-		const id = getTagValue(event, 'h');
-		if (!id) return;
+	protected setChannelStatus(ctx: HandlerContext, next: HandlerNext) {
+		const { event } = ctx;
+		if (event.kind !== SET_CHANNEL_STATUS_KIND) return next();
 
-		const channel = this.channelManager.getChannel(id);
-		if (channel && channel.updated_at < event.created_at) {
-			this.log('Purging channel', id);
-			this.channelManager.purgeChannel(id);
-		}
-	}
-
-	protected setChannelStatus(event: NostrEvent) {
 		const id = getTagValue(event, 'h');
 		if (!id) return;
 

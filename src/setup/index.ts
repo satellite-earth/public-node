@@ -1,5 +1,5 @@
 import path from 'path';
-import express from 'express';
+import express, { type Express } from 'express';
 import Database, { type Database as TDatabase } from 'better-sqlite3';
 import { createServer } from 'http';
 import { mkdirp } from 'mkdirp';
@@ -20,7 +20,7 @@ import { SimplePool } from 'nostr-tools';
 
 const server = createServer();
 
-const expressApp = express();
+const expressApp: Express = express();
 expressApp.use(bodyParser.urlencoded({ extended: false }));
 expressApp.set('view engine', 'pug');
 expressApp.use(router);

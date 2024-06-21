@@ -94,11 +94,21 @@ export class ChannelManager {
 		return event;
 	}
 
+	get channelPrefix() {
+		return this.signer.getPublicKey().slice(0, 8);
+	}
+
+	validateChannelId(id: string) {
+		const valid = id.startsWith(this.channelPrefix + '-');
+		if (!valid) throw new Error('Community prefix missing');
+	}
+
 	getChannel(id: string): Channel | undefined {
 		return this.channels[id];
 	}
 
 	createChannel(id: string, metadata: Channel['metadata'] = {}) {
+		this.validateChannelId(id);
 		this.log('Creating channel', id);
 		const channel: Channel = { id, metadata, public: true, open: true, updated_at: dayjs().unix() };
 
@@ -107,6 +117,7 @@ export class ChannelManager {
 	}
 
 	updateChannel(id: string, metadata: Channel['metadata']) {
+		this.validateChannelId(id);
 		const channel = this.channels[id];
 		if (!channel) throw new Error(`Missing channel ${id}`);
 
