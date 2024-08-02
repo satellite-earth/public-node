@@ -13,6 +13,7 @@
 		"views"
 	],
 	"bin": "dist/index.js",
+	"packageManager": "pnpm@9.6.0",
 	"scripts": {
 		"prepack": "tsc",
 		"start": "node dist/index.js",
