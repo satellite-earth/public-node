@@ -12,10 +12,10 @@ importers:
         specifier: ^1.4.0
         version: 1.4.0
       '@satellite-earth/core':
-        specifier: ^0.2.0
+        specifier: ^0.3.0
         version: link:../core
       '@satellite-earth/web-ui':
-        specifier: ^0.2.0
+        specifier: ^0.3.0
         version: link:../web-ui
       better-sqlite3:
         specifier: ^11.1.2
