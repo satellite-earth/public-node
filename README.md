@@ -3,6 +3,6 @@
 >
 > BUILD IN PUBLIC
 
-# Satellite Personal Node build repo
+# Satellite Public Node build repo
 
 This repo is used to build and publish versions of [@satellite-earth/public-node](https://github.com/satellite-earth/packages/tree/master/apps/public-node)
