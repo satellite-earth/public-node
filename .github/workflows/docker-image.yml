@@ -2,6 +2,8 @@ name: Docker image
 
 on:
   push:
+    branches:
+      - master
     tags:
       - 'v*.*.*'
 
@@ -10,7 +12,7 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build-and-push-image:
+  publish-image:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -19,6 +21,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          submodules: true
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -53,5 +57,3 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          build-args: |
-            NODE_AUTH_TOKEN=${{secrets.GITHUB_TOKEN}}

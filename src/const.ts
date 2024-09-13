@@ -1,1 +1,0 @@
-export const COMMUNITY_DEFINITION_KIND = 12012;
