@@ -18,7 +18,6 @@ RUN make install build
 
 FROM base AS main
 COPY --from=prod-deps /packages/node_modules /packages/node_modules
-COPY --from=prod-deps /packages/apps/web-ui/node_modules /packages/apps/web-ui/node_modules
 COPY --from=prod-deps /packages/apps/public-node/node_modules /packages/apps/public-node/node_modules
 COPY --from=prod-deps /packages/packages/core/node_modules /packages/packages/core/node_modules
 COPY --from=build /packages/apps/web-ui/dist /packages/apps/web-ui/dist
